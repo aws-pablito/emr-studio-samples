@@ -67,4 +67,3 @@ ParameterKey=TemplateS3Bucket,ParameterValue=<your-bucket-name> \
 ### 3. Cleanup
 
 To clean-up remove the two AWS Cloudformation stacks deployed and delete the Amazon S3 bucket just created.
-

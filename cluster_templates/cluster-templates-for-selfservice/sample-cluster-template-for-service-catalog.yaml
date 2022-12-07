@@ -53,7 +53,7 @@ Metadata:
 Mappings:
   EMRRelease:
     current:
-      EMR6: "emr-6.2.0"
+      EMR6: "emr-6.9.0"
       EMR5: "emr-5.32.0"
   InstanceTypes:
     small:
@@ -112,13 +112,24 @@ Resources:
       VisibleToAllUsers: true
       LogUri:
         Fn::Sub: 's3://aws-logs-${AWS::AccountId}-${AWS::Region}/elasticmapreduce/'
+      Configurations:
+        - Classification: hive-site
+          ConfigurationProperties:
+            hive.metastore.client.factory.class: com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
+            hive.metastore.schema.verification: false
+        - Classification: iceberg-defaults
+          ConfigurationProperties:
+            iceberg.enabled: true
+        - Classification: delta-defaults
+          ConfigurationProperties:
+            delta.enabled: true
       Instances:
         TerminationProtected: false
         # Next 4 network parameters import CloudFormation exported values. Assumes the network is already deployed using
         # an AWS cloudformation stack with exported values. The pem key also should be replaced witha valid pem key in your
         # aws account. These values can also be parameterized in the template, however it would require to expose
         # infrastucture complexity to end users and will increase the dependency to cloud operations teams.
-        Ec2KeyName: <your_pem_key>
+        Ec2KeyName: key_generic.pem
         Ec2SubnetId: !ImportValue EMRPrivateSubnet
         # EMR Cluster security group
         EmrManagedMasterSecurityGroup: !ImportValue EMRClusterSecurityGroup
