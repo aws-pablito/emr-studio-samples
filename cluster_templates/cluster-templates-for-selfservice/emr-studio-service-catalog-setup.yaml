@@ -74,7 +74,7 @@ Resources:
       ProvisioningArtifactParameters:
         - Info:
             LoadTemplateFromURL: !Sub "https://s3.${AWS::Region}.amazonaws.com/${TemplateS3Bucket}/sample-cluster-template-for-service-catalog.yaml"
-          Name: "Template004"
+          Name: "Template006"
       SupportDescription: "Sample template for reference only"
   EMRTemplateProductAssociation1:
     Type: AWS::ServiceCatalog::PortfolioProductAssociation

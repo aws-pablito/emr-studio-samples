@@ -34,6 +34,10 @@ Parameters:
     Description: "How many users you expect to run jobs simultaneously"
     Type: "Number"
     Default: "2"
+  ClusterVersion:
+    Description: "EMR Version"
+    Type: "String"
+    Default: "emr-6.9.0"
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -51,10 +55,6 @@ Metadata:
       MemoryProfile:
         default: "Memory Profile"
 Mappings:
-  EMRRelease:
-    current:
-      EMR6: "emr-6.9.0"
-      EMR5: "emr-5.32.0"
   InstanceTypes:
     small:
       master: "m5.xlarge"
@@ -105,11 +105,11 @@ Resources:
         - Name: Livy
         - Name: JupyterEnterpriseGateway
         - Name: Hive
-        - Name: Trino
+        - Name: Presto
       EbsRootVolumeSize: '10'
       JobFlowRole: EMR_EC2_DefaultRole
       ServiceRole: EMR_DefaultRole
-      ReleaseLabel: !FindInMap [EMRRelease, 'current', 'EMR6']
+      ReleaseLabel: !Ref ClusterVersion
       VisibleToAllUsers: true
       LogUri:
         Fn::Sub: 's3://aws-logs-${AWS::AccountId}-${AWS::Region}/elasticmapreduce/'
@@ -117,8 +117,10 @@ Resources:
         - Classification: hive-site
           ConfigurationProperties:
             hive.metastore.client.factory.class: com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
-            hive.metastore.schema.verification: false
-        - Classification: trino-connector-hive
+        - Classification: spark-hive-site
+          ConfigurationProperties:
+            hive.metastore.client.factory.class": com.amazonaws.glue.catalog.metastore.AWSGlueDataCatalogHiveClientFactory
+        - Classification: presto-connector-hive
           ConfigurationProperties:
             hive.metastore: glue
         - Classification: delta-defaults
